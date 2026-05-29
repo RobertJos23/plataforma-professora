@@ -383,7 +383,7 @@ function FAQ() {
 }
 
 function CTA() {
-  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5511999999999";
+  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5531822749711";
   return (
     <section className="py-24">
       <div className="mx-auto max-w-4xl px-4 text-center">
@@ -429,7 +429,7 @@ function Footer() {
             <span className="font-display font-bold text-gray-900">Pascini English</span>
           </Link>
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} Plataforma da Professora. Todos os direitos reservados.
+            © {new Date().getFullYear()} Plataforma da Professora Gabriela Pascini Gonçalves. Todos os direitos reservados.
           </p>
           <div className="flex gap-4 text-sm text-gray-400">
             <Link href="/privacidade" className="hover:text-primary-500 transition-colors">Privacidade</Link>

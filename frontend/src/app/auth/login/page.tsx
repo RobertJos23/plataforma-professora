@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -9,25 +9,19 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error, isAuthenticated, user, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
-
-  // Redirecionar se já autenticado
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      router.push(user.role === "admin" ? "/admin/dashboard" : "/dashboard");
-    }
-  }, [isAuthenticated, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
     try {
       await login(email, password);
-      // Redirecionamento feito pelo useEffect acima
+      const user = useAuthStore.getState().user;
+      router.push(user?.role === "admin" ? "/admin/dashboard" : "/dashboard");
     } catch {
       // Erro tratado no store
     }
@@ -37,6 +31,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md">
         <div className="flex justify-end mb-2"><DarkModeToggle /></div>
+
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
@@ -68,7 +63,7 @@ export default function LoginPage() {
                 className="input"
                 placeholder="seu@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); clearError(); }}
                 required
                 autoComplete="email"
               />
@@ -88,7 +83,7 @@ export default function LoginPage() {
                   className="input pr-10"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); clearError(); }}
                   required
                   autoComplete="current-password"
                 />

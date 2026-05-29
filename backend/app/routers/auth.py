@@ -29,6 +29,7 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     """Cadastro de novo aluno."""
@@ -123,6 +124,7 @@ async def refresh_token(data: RefreshRequest, db: AsyncSession = Depends(get_db)
         refresh_token=create_refresh_token(token_data),
         user={"id": user.id, "email": user.email, "name": user.full_name, "role": user.role},
     )
+
 
 
 @router.post("/logout")

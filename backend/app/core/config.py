@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379"
 
     # ─── CORS ─────────────────────────────────────────────
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod

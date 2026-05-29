@@ -1,0 +1,145 @@
+version: "3.9"
+
+services:
+  # ─── Banco de Dados ───────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: plataforma_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: plataforma_dev
+      POSTGRES_USER: plataforma
+      POSTGRES_PASSWORD: plataforma_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plataforma -d plataforma_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── PgAdmin (UI do banco) ────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: plataforma_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@plataforma.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  # ─── Redis (cache + sessões) ──────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: plataforma_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # ─── Backend (FastAPI) ────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: plataforma_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://plataforma:plataforma_secret@postgres:5432/plataforma_dev
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - ENVIRONMENT=development
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ─── Frontend (Next.js) ───────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: plataforma_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+
+  # ─── N8N (Automações) ─────────────────────────────────────
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: plataforma_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=n8n_secret
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=plataforma
+      - DB_POSTGRESDB_PASSWORD=plataforma_secret
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./automations:/home/node/.n8n/workflows
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ─── MinIO (S3 local para dev) ────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: plataforma_minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
+  minio_data:
+
+networks:
+  default:
+    name: plataforma_network

@@ -1,0 +1,85 @@
+# ─── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ─── Node / Next.js ───────────────────────────────────────
+node_modules/
+.next/
+out/
+.npm
+.eslintcache
+*.tsbuildinfo
+next-env.d.ts
+
+# ─── Terraform ────────────────────────────────────────────
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl
+terraform.tfplan
+
+# ─── AWS ──────────────────────────────────────────────────
+.aws/
+*.pem
+*.key
+
+# ─── Docker ───────────────────────────────────────────────
+.dockerignore
+
+# ─── IDEs ─────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ─── Logs ─────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Uploads / Media ──────────────────────────────────────
+backend/uploads/
+*.mp4
+*.mp3
+
+# ─── Testes / Coverage ────────────────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+coverage/
+
+# ─── Certificados ─────────────────────────────────────────
+*.crt
+*.csr

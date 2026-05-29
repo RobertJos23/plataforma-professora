@@ -28,10 +28,9 @@ interface Badge {
 
 interface RankingEntry {
   rank: number;
-  user_id: number;
+  id: number;
   name: string;
   points: number;
-  level: string;
   is_me: boolean;
 }
 
@@ -65,7 +64,16 @@ export default function ProgressoPage() {
     ]).then(([pRes, bRes, rRes]) => {
       if (pRes.status === "fulfilled") setProgress(pRes.value.data);
       if (bRes.status === "fulfilled") setBadges(bRes.value.data || []);
-      if (rRes.status === "fulfilled") setRanking(rRes.value.data || []);
+      if (rRes.status === "fulfilled") {
+        const { ranking: list = [], my_position } = rRes.value.data || {};
+        setRanking(list.map((r: { position: number; id: number; name: string; points: number }, i: number) => ({
+          rank: r.position ?? i + 1,
+          id: r.id,
+          name: r.name,
+          points: r.points,
+          is_me: r.position === my_position,
+        })));
+      }
     }).finally(() => setIsLoading(false));
   }, [isAuthenticated]);
 
@@ -203,7 +211,7 @@ export default function ProgressoPage() {
               <div className="space-y-2">
                 {ranking.slice(0, 10).map((entry) => (
                   <div
-                    key={entry.rank}
+                    key={entry.id}
                     className={`flex items-center gap-3 rounded-xl p-3 ${
                       entry.is_me ? "bg-primary-50 border border-primary-100" : "hover:bg-gray-50"
                     }`}
@@ -223,7 +231,6 @@ export default function ProgressoPage() {
                       <p className={`text-sm font-medium truncate ${entry.is_me ? "text-primary-700" : "text-gray-900"}`}>
                         {entry.is_me ? "Você" : entry.name.split(" ")[0]}
                       </p>
-                      <p className="text-xs text-gray-400">{entry.level}</p>
                     </div>
                     <span className="text-xs font-bold text-gray-600">⭐ {entry.points}</span>
                   </div>

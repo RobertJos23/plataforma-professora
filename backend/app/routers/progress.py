@@ -350,7 +350,7 @@ async def _recalculate_attendance(user_id: int, progress: Progress, db: AsyncSes
     if scheduled > 0:
         progress.attendance_percentage = round((completed / scheduled) * 100, 1)
 
-    # Horas totais (Hard Code: duração padrão 60min)
+    # Horas totais
     hours_result = await db.execute(
         select(func.sum(Lesson.duration_minutes)).where(
             and_(Lesson.student_id == user_id, Lesson.status == LessonStatus.COMPLETED)
@@ -358,6 +358,34 @@ async def _recalculate_attendance(user_id: int, progress: Progress, db: AsyncSes
     )
     total_minutes = hours_result.scalar() or 0
     progress.total_hours_completed = round(total_minutes / 60, 1)
+
+    # Streak: dias consecutivos com aula concluída até hoje
+    days_result = await db.execute(
+        select(func.date(Lesson.scheduled_at))
+        .where(and_(Lesson.student_id == user_id, Lesson.status == LessonStatus.COMPLETED))
+        .order_by(func.date(Lesson.scheduled_at).desc())
+    )
+    lesson_days = [row[0] for row in days_result.all()]
+
+    streak = 0
+    if lesson_days:
+        from datetime import timedelta
+        today = date.today()
+        check = today
+        for lesson_date in lesson_days:
+            if isinstance(lesson_date, str):
+                lesson_date = date.fromisoformat(lesson_date)
+            if lesson_date == check or lesson_date == check - timedelta(days=1):
+                if lesson_date != check:
+                    check = lesson_date
+                streak += 1
+                check -= timedelta(days=1)
+            elif lesson_date < check - timedelta(days=1):
+                break
+
+    progress.current_streak = streak
+    if streak > (progress.longest_streak or 0):
+        progress.longest_streak = streak
 
 
 async def _award_badge(

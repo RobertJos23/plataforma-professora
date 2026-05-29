@@ -48,7 +48,10 @@ async def chat_with_tutor(
     Chatbot de dúvidas de inglês — disponível 24/7.
     Responde dúvidas de gramática, vocabulário e uso.
     """
-    from anthropic import Anthropic
+    if not settings.ANTHROPIC_API_KEY:
+        raise HTTPException(status_code=503, detail="Serviço de IA não configurado. Adicione a ANTHROPIC_API_KEY.")
+
+    from anthropic import Anthropic, AuthenticationError, APIError
 
     client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
@@ -68,12 +71,17 @@ async def chat_with_tutor(
         {"role": "user", "content": body.message}
     ]
 
-    response = client.messages.create(
-        model=settings.AI_MODEL,
-        max_tokens=1024,
-        system=system_prompt,
-        messages=messages,
-    )
+    try:
+        response = client.messages.create(
+            model=settings.AI_MODEL,
+            max_tokens=1024,
+            system=system_prompt,
+            messages=messages,
+        )
+    except AuthenticationError:
+        raise HTTPException(status_code=503, detail="Chave da API de IA inválida. Verifique a ANTHROPIC_API_KEY.")
+    except APIError as e:
+        raise HTTPException(status_code=503, detail=f"Erro no serviço de IA: {str(e)}")
 
     return {
         "response": response.content[0].text,

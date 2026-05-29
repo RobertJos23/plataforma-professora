@@ -37,7 +37,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen bg-white font-sans">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var s=localStorage.getItem('theme'),p=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(s===null&&p))document.documentElement.classList.add('dark')})()` }} />
+      </head>
+      <body className="min-h-screen bg-white dark:bg-gray-900 font-sans transition-colors duration-200">
         {children}
       </body>
     </html>

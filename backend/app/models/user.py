@@ -49,7 +49,7 @@ class User(Base):
 
     # Timestamps
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), onupdate=func.now())
+    updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     last_login_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True))
 
     # Relacionamentos

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -55,6 +56,7 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md">
+        <div className="flex justify-end mb-2"><DarkModeToggle /></div>
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">

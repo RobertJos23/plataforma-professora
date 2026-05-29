@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
 # ─── Development ──────────────────────────────────────────
 FROM base AS development
 
-COPY requirements-dev.txt .
-RUN pip install -r requirements-dev.txt
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install --upgrade pip setuptools wheel && pip install -r requirements-dev.txt
 
 COPY . .
 
@@ -28,7 +28,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload
 FROM base AS production
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
 
 COPY . .
 

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { lessonsApi, progressApi, materialsApi } from "@/lib/api";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 interface Lesson {
   id: number;
@@ -123,6 +124,7 @@ export default function DashboardPage() {
               <span className="hidden text-sm font-medium text-gray-700 sm:block">{user?.name}</span>
             </div>
 
+            <DarkModeToggle />
             <button
               onClick={logout}
               className="rounded-lg p-2 hover:bg-gray-100 text-gray-400 hover:text-gray-600"
@@ -326,7 +328,7 @@ export default function DashboardPage() {
 
             {/* Teste de nivelamento */}
             {!progress?.current_level || progress.current_level === "A1" ? (
-              <div className="card bg-gradient-to-br from-primary-50 to-accent-50 border-primary-100">
+              <div className="card bg-gradient-to-br from-primary-50 to-accent-50 border-primary-100 dark:from-primary-900/40 dark:to-accent-900/40 dark:border-primary-800">
                 <h3 className="font-semibold text-gray-900 mb-2">📊 Faça o nivelamento</h3>
                 <p className="text-sm text-gray-600 mb-4">
                   Descubra seu nível real de inglês em apenas 10 perguntas.

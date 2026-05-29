@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookOpen, Star, MessageCircle, Award, Clock, Users, Zap, CheckCircle, ChevronRight } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 // ─── Dados estáticos ──────────────────────────────────────
 
@@ -125,7 +126,8 @@ function Navbar() {
           <a href="#faq" className="text-sm text-gray-600 hover:text-primary-500 transition-colors">FAQ</a>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <DarkModeToggle />
           <Link href="/auth/login" className="btn-ghost text-sm py-2">
             Entrar
           </Link>

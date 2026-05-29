@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="API da plataforma de aulas de inglês — vitrine, área do aluno, painel admin e IA.",Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    description="API da plataforma de aulas de inglês — vitrine, área do aluno, painel admin e IA.",
     version=settings.APP_VERSION,
     docs_url="/docs" if not settings.is_production else None,
     redoc_url="/redoc" if not settings.is_production else None,

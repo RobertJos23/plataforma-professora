@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 from typing import List
+import json
 
 
 class Settings(BaseSettings):
@@ -29,6 +31,16 @@ class Settings(BaseSettings):
 
     # ─── CORS ─────────────────────────────────────────────
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_origins(cls, v):
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("["):
+                return json.loads(v)
+            return [o.strip() for o in v.split(",")]
+        return v
 
     # ─── AWS ──────────────────────────────────────────────
     AWS_ACCESS_KEY_ID: str = ""

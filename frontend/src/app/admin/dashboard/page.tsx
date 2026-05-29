@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { adminApi } from "@/lib/api";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 interface DashboardData {
   students: { active: number; new_this_month: number; blocked: number };
@@ -85,6 +86,7 @@ export default function AdminDashboardPage() {
               <span>Olá,</span>
               <span className="font-semibold">{user?.name?.split(" ")[0]}</span>
             </div>
+            <DarkModeToggle />
             <button
               onClick={logout}
               className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100"
